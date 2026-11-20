@@ -1,0 +1,310 @@
+/* ==============================================================================
+   MODERN POS THEME - DEEP NAVY & VIBRANT BLUE DESIGN SYSTEM
+   ============================================================================== */
+
+:root {
+  --sidebar-bg: #0f172a;       /* Slate 900 */
+  --sidebar-hover: #1e293b;    /* Slate 800 */
+  --sidebar-active: #2563eb;   /* Blue 600 */
+  --primary: #2563eb;          /* Blue 600 */
+  --primary-dark: #1d4ed8;     /* Blue 700 */
+  --primary-light: #eff6ff;    /* Blue 50 */
+  --accent: #0ea5e9;           /* Sky 500 */
+  --success: #10b981;          /* Emerald 500 */
+  --warning: #f59e0b;          /* Amber 500 */
+  --danger: #ef4444;           /* Rose 500 */
+  --body-bg: #f8fafc;          /* Slate 50 */
+  --card-bg: #ffffff;
+  --text-main: #1e293b;        /* Slate 800 */
+  --text-muted: #64748b;       /* Slate 500 */
+  --border-color: #e2e8f0;     /* Slate 200 */
+  --sidebar-width: 260px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--body-bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ----------------------------- SIDEBAR ----------------------------- */
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  color: #f8fafc;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  z-index: 1040;
+}
+
+.sidebar-brand {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.sidebar-brand i {
+  color: var(--accent);
+  margin-right: 0.75rem;
+  font-size: 1.35rem;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 1rem 0.75rem;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.menu-header {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  padding: 0.75rem 0.75rem 0.25rem 0.75rem;
+  letter-spacing: 1px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.85rem;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link i {
+  width: 24px;
+  font-size: 1.05rem;
+  margin-right: 0.75rem;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+  color: #ffffff;
+  background-color: var(--sidebar-hover);
+}
+
+.sidebar-link:hover i {
+  color: var(--accent);
+}
+
+.sidebar-link.active {
+  color: #ffffff;
+  background-color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.sidebar-link.active i {
+  color: #ffffff;
+}
+
+/* ----------------------------- MAIN CONTENT ----------------------------- */
+.app-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-header {
+  height: 70px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.content-body {
+  padding: 1.75rem;
+  flex-grow: 1;
+}
+
+/* ----------------------------- CARD STYLING ----------------------------- */
+.pos-card {
+  background: var(--card-bg);
+  border-radius: 0.875rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pos-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+/* ----------------------------- POS SCREEN ----------------------------- */
+.pos-product-card {
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pos-product-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.15);
+}
+
+.pos-product-card.out-of-stock {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(80%);
+}
+
+.product-img-wrapper {
+  height: 120px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.product-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-panel {
+  position: sticky;
+  top: 85px;
+  max-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-items-list {
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ----------------------------- THERMAL RECEIPT ----------------------------- */
+.receipt-wrapper {
+  background: #ffffff;
+  margin: 0 auto;
+  padding: 16px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: #000000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.receipt-58 {
+  width: 220px;
+}
+
+.receipt-80 {
+  width: 300px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt-wrapper, .receipt-wrapper * {
+    visibility: visible;
+  }
+  .receipt-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ----------------------------- RESPONSIVE MOBILE ----------------------------- */
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -100%;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  .app-sidebar.show {
+    left: 0;
+  }
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.6);
+    z-index: 1030;
+    display: none;
+  }
+  .sidebar-backdrop.show {
+    display: block;
+  }
+}

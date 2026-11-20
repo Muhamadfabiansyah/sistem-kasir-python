@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Pengaturan Sistem{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Pengaturan Sistem</h4>
+    <p class="text-muted mb-0">Kelola identitas toko pada struk dan keamanan kata sandi akun Anda</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- PENGATURAN IDENTITAS TOKO (ADMIN ONLY) -->
+  {% if session.get('user_role') == 'admin' %}
+  <div class="col-12 col-lg-7">
+    <div class="pos-card p-4 h-100">
+      <div class="d-flex align-items-center mb-3">
+        <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-0">Identitas Toko</h5>
+          <small class="text-muted">Informasi ini akan tercetak pada kepala struk belanja pelanggan</small>
+        </div>
+      </div>
+
+      <form method="POST" action="{{ url_for('settings.update_store') }}">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Nama Toko</label>
+          <input type="text" name="store_name" class="form-control" value="{{ store.store_name if store else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Alamat Toko</label>
+          <textarea name="store_address" class="form-control" rows="2" required>{{ store.store_address if store else '' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Nomor Telepon / WhatsApp</label>
+          <input type="text" name="store_phone" class="form-control" value="{{ store.store_phone if store else '' }}" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold">Pesan Footer Struk</label>
+          <input type="text" name="receipt_footer" class="form-control" value="{{ store.receipt_footer if store else '' }}">
+          <small class="text-muted">Contoh: "Terima kasih atas kunjungan Anda!"</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary px-4">
+          <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Perubahan Toko
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- UBAH PASSWORD AKUN PENGGUNA AKTIF -->
+  <div class="col-12 col-lg-{{ '5' if session.get('user_role') == 'admin' else '6' }}">
+    <div class="pos-card p-4 h-100">
+      <div class="d-flex align-items-center mb-3">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-0">Keamanan Akun</h5>
+          <small class="text-muted">Perbarui password akun Anda secara berkala</small>
+        </div>
+      </div>
+
+      <div class="bg-light p-3 rounded-3 mb-3 small">
+        <div><b>Nama:</b> {{ current_user.full_name }}</div>
+        <div><b>Username:</b> @{{ current_user.username }}</div>
+        <div><b>Peran:</b> <span class="badge bg-primary text-uppercase">{{ current_user.role }}</span></div>
+      </div>
+
+      <form method="POST" action="{{ url_for('settings.change_password') }}">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Password Saat Ini</label>
+          <input type="password" name="current_password" class="form-control" placeholder="Masukkan password lama" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Password Baru (Minimal 4 karakter)</label>
+          <input type="password" name="new_password" class="form-control" placeholder="Masukkan password baru" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold">Konfirmasi Password Baru</label>
+          <input type="password" name="confirm_password" class="form-control" placeholder="Ulangi password baru" required>
+        </div>
+
+        <button type="submit" class="btn btn-warning text-dark px-4 fw-semibold">
+          <i class="fa-solid fa-key me-2"></i>Ganti Password
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

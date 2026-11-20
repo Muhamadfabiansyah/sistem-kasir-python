@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Sistem Kasir Modern (POS){% endblock %} - Toko Berkah</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <!-- Custom POS Style -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Backdrop for mobile sidebar -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <a href="{{ url_for('dashboard.index') if session.get('user_role') == 'admin' else url_for('cashier.pos_screen') }}" class="sidebar-brand">
+        <i class="fa-solid fa-cash-register"></i>
+        <span>BERKAH POS</span>
+      </a>
+
+      <ul class="sidebar-menu">
+        {% if session.get('user_role') == 'admin' %}
+        <li class="menu-header">Menu Utama</li>
+        <li>
+          <a href="{{ url_for('dashboard.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard.index' else '' }}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="menu-header">Transaksi</li>
+        <li>
+          <a href="{{ url_for('cashier.pos_screen') }}" class="sidebar-link {{ 'active' if request.endpoint == 'cashier.pos_screen' else '' }}">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>Kasir / POS</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('transactions.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'transactions.index' else '' }}">
+            <i class="fa-solid fa-receipt"></i>
+            <span>Riwayat Transaksi</span>
+          </a>
+        </li>
+
+        {% if session.get('user_role') == 'admin' %}
+        <li class="menu-header">Katalog & Stok</li>
+        <li>
+          <a href="{{ url_for('products.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'products.index' else '' }}">
+            <i class="fa-solid fa-box-open"></i>
+            <span>Data Produk</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('categories.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'categories.index' else '' }}">
+            <i class="fa-solid fa-tags"></i>
+            <span>Kategori Produk</span>
+          </a>
+        </li>
+
+        <li class="menu-header">Analitik & Laporan</li>
+        <li>
+          <a href="{{ url_for('reports.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'reports.index' else '' }}">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <span>Laporan Penjualan</span>
+          </a>
+        </li>
+
+        <li class="menu-header">Manajemen Sistem</li>
+        <li>
+          <a href="{{ url_for('users.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'users.index' else '' }}">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>Manajemen Pengguna</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="menu-header">Akun</li>
+        <li>
+          <a href="{{ url_for('settings.index') }}" class="sidebar-link {{ 'active' if request.endpoint == 'settings.index' else '' }}">
+            <i class="fa-solid fa-gear"></i>
+            <span>Pengaturan</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('auth.logout') }}" class="sidebar-link text-danger">
+            <i class="fa-solid fa-arrow-right-from-bracket text-danger"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- MAIN APP AREA -->
+    <div class="app-main">
+      <!-- HEADER -->
+      <header class="app-header">
+        <div class="d-flex align-items-center">
+          <button class="btn btn-light d-lg-none me-2" onclick="toggleMobileSidebar()" aria-label="Toggle Sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="d-none d-md-block">
+            <h6 class="mb-0 fw-bold">TOKO BERKAH SEJAHTERA</h6>
+            <small class="text-muted"><i class="fa-solid fa-location-dot me-1 text-primary"></i>Cabang Pusat</small>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <!-- Real-time Clock -->
+          <div class="d-none d-md-flex align-items-center text-muted fs-7 bg-light px-3 py-1 rounded-pill">
+            <i class="fa-regular fa-clock me-2 text-primary"></i>
+            <span id="header-live-clock">Memuat waktu...</span>
+          </div>
+
+          <!-- User Profile Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-outline-light border text-dark d-flex align-items-center gap-2 rounded-pill px-3 py-1 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="fa-solid fa-user-tie"></i>
+              </div>
+              <div class="text-start d-none d-sm-block">
+                <div class="fw-semibold lh-1 fs-7">{{ session.get('full_name', 'Kasir') }}</div>
+                <small class="text-muted text-uppercase fs-8">{{ session.get('user_role', 'cashier') }}</small>
+              </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+              <li><h6 class="dropdown-header">Akun: @{{ session.get('username') }}</h6></li>
+              <li><a class="dropdown-item" href="{{ url_for('settings.index') }}"><i class="fa-solid fa-key me-2 text-muted"></i>Ubah Password</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Keluar</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <main class="content-body">
+        <!-- Flash Alert Notification -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom POS Engine JS -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script>
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('app-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('show');
+      backdrop.classList.toggle('show');
+    }
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

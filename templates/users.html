@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Manajemen Pengguna{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Manajemen Pengguna</h4>
+    <p class="text-muted mb-0">Kelola akun staf kasir dan administrator sistem POS</p>
+  </div>
+  <div class="mt-2 mt-md-0">
+    <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      <i class="fa-solid fa-user-plus me-2"></i>Tambah Pengguna
+    </button>
+  </div>
+</div>
+
+<div class="pos-card p-4">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light fs-8 text-uppercase">
+        <tr>
+          <th>Nama Lengkap</th>
+          <th>Username</th>
+          <th>Peran (Role)</th>
+          <th>Dibuat Pada</th>
+          <th class="text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ u.full_name }}</div>
+          </td>
+          <td class="font-monospace text-muted">@{{ u.username }}</td>
+          <td>
+            {% if u.role == 'admin' %}
+              <span class="badge bg-primary text-uppercase px-2 py-1"><i class="fa-solid fa-shield-halved me-1"></i>Administrator</span>
+            {% else %}
+              <span class="badge bg-secondary text-uppercase px-2 py-1"><i class="fa-solid fa-cash-register me-1"></i>Kasir</span>
+            {% endif %}
+          </td>
+          <td class="small text-muted">{{ u.created_at[:10] if u.created_at else '-' }}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editUserModal{{ u.id }}">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            {% if u.id != session.get('user_id') %}
+            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ u.id }}">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+            {% endif %}
+          </td>
+        </tr>
+
+        <!-- MODAL EDIT PENGGUNA -->
+        <div class="modal fade" id="editUserModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+              <form method="POST" action="{{ url_for('users.edit', user_id=u.id) }}">
+                <div class="modal-header">
+                  <h6 class="modal-title fw-bold">Edit Akun: {{ u.full_name }}</h6>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Username</label>
+                    <input type="text" class="form-control" value="{{ u.username }}" disabled>
+                    <small class="text-muted">Username tidak dapat diubah</small>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Nama Lengkap</label>
+                    <input type="text" name="full_name" class="form-control" value="{{ u.full_name }}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Peran (Role)</label>
+                    <select name="role" class="form-select" required>
+                      <option value="cashier" {{ 'selected' if u.role == 'cashier' else '' }}>Kasir</option>
+                      <option value="admin" {{ 'selected' if u.role == 'admin' else '' }}>Administrator</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Reset Password (Kosongkan jika tidak diubah)</label>
+                    <input type="password" name="new_password" class="form-control" placeholder="Password baru">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                  <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL HAPUS PENGGUNA -->
+        <div class="modal fade" id="deleteUserModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+              <form method="POST" action="{{ url_for('users.delete', user_id=u.id) }}">
+                <div class="modal-body text-center p-4">
+                  <i class="fa-solid fa-triangle-exclamation text-danger fa-3x mb-3"></i>
+                  <h6 class="fw-bold mb-2">Hapus Pengguna?</h6>
+                  <p class="small text-muted mb-0">Apakah Anda yakin ingin menghapus akun <b>{{ u.full_name }}</b>?</p>
+                </div>
+                <div class="modal-footer justify-content-center p-2 bg-light">
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                  <button type="submit" class="btn btn-sm btn-danger">Hapus Akun</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL TAMBAH PENGGUNA -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <form method="POST" action="{{ url_for('users.add') }}">
+        <div class="modal-header">
+          <h6 class="modal-title fw-bold">Tambah Pengguna Baru</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Contoh: kasir2" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nama Lengkap</label>
+            <input type="text" name="full_name" class="form-control" placeholder="Contoh: Budi Santoso" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Peran (Role)</label>
+            <select name="role" class="form-select" required>
+              <option value="cashier" selected>Kasir</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Password (Minimal 4 karakter)</label>
+            <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Tambah Pengguna</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

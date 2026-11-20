@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+env/
+venv/
+instance/pos.db-journal
+static/uploads/*
+!static/uploads/.gitkeep
+.DS_Store
+Thumbs.db
+
+
+# Environment variables dan secret
+.env
+.env.*
+!.env.example
+
+# Database lokal
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+
+# Log
+*.log
